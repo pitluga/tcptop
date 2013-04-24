@@ -23,13 +23,19 @@ module Tcptop
       opts.on("--queued", "sort on queued requests, defaults to active") do
         options[:sort] = :queued
       end
+      opts.on("-v", "--version", "prints the version and exits") do
+        options[:version] = true
+      end
     end.parse!
     options
   end
 
   def self.run!
     options = parse_options!
-    if options[:once]
+    if options[:version]
+      puts "tcptop: version #{Tcptop::VERSION}"
+      exit 0
+    elsif options[:once]
       print_info(options[:tcp], options[:sort])
       exit 0
     else

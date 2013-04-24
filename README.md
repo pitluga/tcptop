@@ -1,24 +1,35 @@
 # Tcptop
 
-TODO: Write a gem description
+A TCP connection monitor that builds upon [raindrops](http://raindrops.bogomips.org/)
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'tcptop'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+Install it using:
 
     $ gem install tcptop
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ tcptop -h
+    Usage: tcptop [options]                                                              
+    -t, --tcp SOCKET                 tcp socket to filter, can be used multiple times
+    -1, --once                       print once and exit                             
+    -n, --interval SECONDS           seconds between stat collection, DEFAULT: 2     
+        --queued                     sort on queued requests, defaults to active     
+    -v, --version                    prints the version and exits                    
+
+Output:
+
+    $ tcptop -1
+    Socket               Active*  Queued 
+    0.0.0.0:22           3        0      
+    0.0.0.0:8080         1        1      
+    [::%2510935584]:22   0        0      
+    [::%2510935584]:80   0        0      
+    [::1%2510935584]:25  0        0      
+    127.0.0.1:25         0        0      
+    127.0.0.1:11211      0        0      
+
 
 ## Contributing
 

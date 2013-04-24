@@ -1,6 +1,6 @@
 # Tcptop
 
-A TCP connection monitor that builds upon [raindrops](http://raindrops.bogomips.org/)
+A TCP connection monitor that builds upon [raindrops](http://raindrops.bogomips.org/). Useful for monitoring a pool of unicorn workers.
 
 ## Installation
 

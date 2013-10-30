@@ -85,14 +85,13 @@ module Tcptop
       "Active" + (sort == :active ? "*" : ""),
       "Queued" + (sort == :queued ? "*" : "")
     ]
-    responses = if sockets.empty?
+    responses = if paths.any?
+                  Raindrops::Linux.unix_listener_stats(paths)
+                elsif sockets.empty?
                   Raindrops::Linux.tcp_listener_stats
                 else
                   Raindrops::Linux.tcp_listener_stats(sockets)
                 end
-    if paths.any?
-      responses.merge!(Raindrops::Linux.unix_listener_stats(paths))
-    end
 
     responses.sort_by { |(a, s)| -1 * s.send(sort) }.each do |(address, stats)|
       puts LAYOUT % [address, stats.active, stats.queued]

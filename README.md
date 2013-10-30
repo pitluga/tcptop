@@ -11,12 +11,14 @@ Install it using:
 ## Usage
 
     $ tcptop -h
-    Usage: tcptop [options]                                                              
+    Usage: tcptop [options]
     -t, --tcp SOCKET                 tcp socket to filter, can be used multiple times
-    -1, --once                       print once and exit                             
-    -n, --interval SECONDS           seconds between stat collection, DEFAULT: 2     
-        --queued                     sort on queued requests, defaults to active     
-    -v, --version                    prints the version and exits                    
+    -u, --unix PATH                  domain socket to filter, can be used multiple times, will not show by default
+    -1, --once                       print once and exit
+    -n, --interval SECONDS           seconds between stat collection, DEFAULT: 2
+        --queued                     sort on queued requests, defaults to active
+        --collectd LABEL             print output suitable for collectd, must also provide socket or path
+    -v, --version                    prints the version and exits
 
 Output:
 
@@ -30,6 +32,13 @@ Output:
     127.0.0.1:25         0        0      
     127.0.0.1:11211      0        0      
 
+## Domain Sockets
+
+Unix sockets do not show up by default, if you wish to monitor a unix socket, you must pass the --unix flag
+
+    $ tcptop -1 --unix /tmp/foo.sock
+    Socket               Active*  Queued
+    /tmp/foo.sock        0        0     
 
 ## Contributing
 

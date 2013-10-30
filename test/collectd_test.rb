@@ -7,7 +7,7 @@ class CollectdTest < Test::Unit::TestCase
 
     lines = s.split("\n")
     assert_equal 2, lines.size
-    assert_match %r{PUTVAL localhost/unicorn/absolute-active \d+:10}, lines.first
-    assert_match %r{PUTVAL localhost/unicorn/absolute-queued \d+:2}, lines.last
+    assert_match %r{PUTVAL localhost/unicorn/gauge-active \d+:10}, lines.first
+    assert_match %r{PUTVAL localhost/unicorn/gauge-queued \d+:2}, lines.last
   end
 end

@@ -1,4 +1,5 @@
 require "tcptop/version"
+require "tcptop/collectd"
 require 'rubygems'
 require 'raindrops'
 require 'optparse'
@@ -26,6 +27,9 @@ module Tcptop
       opts.on("--queued", "sort on queued requests, defaults to active") do
         options[:sort] = :queued
       end
+      opts.on("--collectd LABEL", "print output suitable for collectd, must also provide socket or path") do |label|
+        options[:collectd] = label
+      end
       opts.on("-v", "--version", "prints the version and exits") do
         options[:version] = true
       end
@@ -41,6 +45,27 @@ module Tcptop
     elsif options[:once]
       print_info(options[:tcp], options[:unix], options[:sort])
       exit 0
+    elsif options[:collectd]
+      unless options[:tcp].size == 1 || options[:unix].size == 1
+        puts "the --tcp or --unix option must be used once to identify the socket"
+        exit 1
+      end
+
+      Signal.trap("INT") { exit 0 }
+      hostname = ENV["COLLECTD_HOSTNAME"] || 'localhost'
+      interval = (ENV["COLLECTD_INTERVAL"] || '60').to_i
+      label = options[:collectd]
+
+      loop do
+        stats = nil
+        if options[:tcp].size > 0
+          _, stats = Raindrops::Linux.tcp_listener_stats(options[:tcp]).first
+        else
+          _, stats = Raindrops::Linux.unix_listener_stats(options[:unix]).first
+        end
+        Collectd.reading(stats.active, stats.queued, hostname, label)
+        sleep interval
+      end
     else
       Signal.trap("INT") { exit 0 }
 

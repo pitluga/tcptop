@@ -7,12 +7,15 @@ LAYOUT = "%-20s %-8s %-8s"
 
 module Tcptop
   def self.parse_options!
-    options = {:tcp => [], :interval => 2, :sort => :active}
+    options = {:tcp => [], :unix => [], :interval => 2, :sort => :active}
     OptionParser.new do |opts|
       opts.banner = "Usage: tcptop [options]"
 
       opts.on("-t", "--tcp SOCKET", "tcp socket to filter, can be used multiple times") do |sock|
         options[:tcp] << sock
+      end
+      opts.on("-u", "--unix PATH", "domain socket to filter, can be used multiple times, will not show by default") do |path|
+        options[:unix] << path
       end
       opts.on("-1", "--once", "print once and exit") do
         options[:once] = true
@@ -36,7 +39,7 @@ module Tcptop
       puts "tcptop: version #{Tcptop::VERSION}"
       exit 0
     elsif options[:once]
-      print_info(options[:tcp], options[:sort])
+      print_info(options[:tcp], options[:unix], options[:sort])
       exit 0
     else
       Signal.trap("INT") { exit 0 }
@@ -45,13 +48,13 @@ module Tcptop
         system "clear"
         puts "Updated: #{Time.now}, checking every #{options[:interval]} seconds"
         puts
-        print_info(options[:tcp], options[:sort])
+        print_info(options[:tcp], options[:unix], options[:sort])
         sleep options[:interval]
       end
     end
   end
 
-  def self.print_info(sockets, sort)
+  def self.print_info(sockets, paths, sort)
     puts LAYOUT % [
       "Socket",
       "Active" + (sort == :active ? "*" : ""),
@@ -62,6 +65,9 @@ module Tcptop
                 else
                   Raindrops::Linux.tcp_listener_stats(sockets)
                 end
+    if paths.any?
+      responses.merge!(Raindrops::Linux.unix_listener_stats(paths))
+    end
 
     responses.sort_by { |(a, s)| -1 * s.send(sort) }.each do |(address, stats)|
       puts LAYOUT % [address, stats.active, stats.queued]

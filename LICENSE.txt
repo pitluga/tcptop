@@ -1,4 +1,4 @@
-Copyright (c) 2013 Braintree
+Copyright (c) 2013 Tony Pitluga
 
 MIT License
 
